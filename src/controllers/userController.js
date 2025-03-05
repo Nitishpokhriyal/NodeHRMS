@@ -50,10 +50,10 @@ async function login(req, resp) {
         }
 
         // Generate token
-        const token = generateToken({ id: companyid });
-        resp.header('token',token)
+        // const token = generateToken({ id: companyid });
+        // resp.header('token',token)
         // Send response
-        return resp.status(200).json({error: false, Authorization: token, });
+        return resp.status(200).json({error: false});
     } catch (error) {
         console.error('Login error:', error);
         return resp.status(500).json({ error: 'Error during login',email: req.body.companyemail,pswd: req.body.companypswd });
