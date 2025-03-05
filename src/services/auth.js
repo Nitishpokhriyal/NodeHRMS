@@ -6,6 +6,7 @@ const options = {
     expiresIn: '1h', // Set token expiration
   };
 const generateToken = (payload) => {
+
     return jwt.sign(payload, process.env.SECRET_KEY, options );
 };
 

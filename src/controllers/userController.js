@@ -40,7 +40,6 @@ async function login(req, resp) {
         if (result.rows.length === 0) {
             return resp.status(401).json({ error: 'Invalid credentials.' });
         }
-        console.log(result.rows.companyid)
 
         const { companyid, companypswd: hashedPassword } = result.rows[0];
 
