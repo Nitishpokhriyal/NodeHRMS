@@ -15,7 +15,7 @@ async function employeeData(req, resp) {
             return resp.status(400).json({ error: "Invalid email format." });
         }
 
-        // 🔹 Check if empcode or empemail already exists
+        // 🔹 Check if empcode or empemail already exists (Pre-check)
         const checkQuery = `SELECT empcode, empemail FROM mst_employees WHERE empcode = $1 OR empemail = $2`;
         const checkResult = await pool.query(checkQuery, [empcode, empemail]);
 
@@ -50,6 +50,10 @@ async function employeeData(req, resp) {
         try {
             result = await pool.query(query, values);
         } catch (dbError) {
+            // 🔹 Handle Unique Constraint Violation (Duplicate empcode or email)
+            if (dbError.code === "23505") {
+                return resp.status(400).json({ error: "Employee Code or Email already exists." });
+            }
             console.error('Database query failed:', dbError);
             return resp.status(500).json({ error: 'Database Error' });
         }
@@ -65,6 +69,7 @@ async function employeeData(req, resp) {
         return resp.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
 
 
 
