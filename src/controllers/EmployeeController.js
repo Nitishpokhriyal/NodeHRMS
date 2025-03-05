@@ -1,4 +1,6 @@
 const  pool  = require("../../config/dbConfig");
+const { generateToken } = require("../services/auth");
+const bcrypt = require('bcrypt');
 
 async function employeeData(req, resp) {
     const { empname, empcode, empemail, empphone, empbranch, empdoj, empdob, companyid } = req.body;
@@ -30,8 +32,9 @@ async function employeeData(req, resp) {
         }
 
         // 🔹 Generate password (empcode + "@123")
-        const emppswd = empcode + "@123";  
-
+        const emppswd = empcode + "Abc@123";  
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(emppswd, saltRounds);
         // 🔹 Insert Employee Data
         const query = `
             INSERT INTO mst_employees 
@@ -43,7 +46,7 @@ async function employeeData(req, resp) {
             RETURNING "empautoid";
         `;
 
-        const values = [empname, empcode, empemail, empphone, empbranch, empdoj, empdob, companyid, emppswd];
+        const values = [empname, empcode, empemail, empphone, empbranch, empdoj, empdob, companyid, hashedPassword];
 
         let result;
     
@@ -75,6 +78,66 @@ async function employeeData(req, resp) {
 
 
 
+async function empLogin(req, resp) {
+    const { empemail, emppswd } = req.body;
+
+    try {
+        // Validation functions
+        function isValidEmail(email) {
+            const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return regex.test(email);
+        }
+
+        function isValidPswd(pswd) {
+            const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            return regex.test(pswd);
+        }
+
+        // Validate email and password format
+        if (!isValidEmail(empemail)) {
+            return resp.status(400).json({ error: 'Invalid email format.' });
+        }
+
+        if (!isValidPswd(emppswd)) {
+            return resp.status(400).json({
+                error: 'Password must be at least 8 characters long, including an uppercase letter, a lowercase letter, a number, and a special character.',
+            });
+        }
+
+        // Fetch user from database
+        const query = `SELECT "empcode", "empemail", "emppswd" FROM mst_employees WHERE "empemail" = $1`;
+        const values = [empemail];
+
+        const result = await pool.query(query, values);
+        if (result.rows.length === 0) {
+            return resp.status(401).json({ error: 'Invalid credentials.' });
+        }
+
+        const { empcode, emppswd: hashedPassword } = result.rows[0];
+
+        // Compare password
+        const passwordMatch = await bcrypt.compare(emppswd, hashedPassword);
+        if (!passwordMatch) {
+            return resp.status(401).json({ error: 'Invalid credentials.' });
+        }
+
+        // Generate token
+        const token = generateToken({ id: empcode });
+        resp.header('token',token)
+        // Send response
+        return resp.status(200).json({error: false, Authorization: token, });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        return resp.status(500).json({ error: 'Error during login' });
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -94,5 +157,6 @@ async function employeeData(req, resp) {
 
 
 module.exports = {
-    employeeData
+    employeeData,
+    empLogin
 }
