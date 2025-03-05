@@ -1,6 +1,7 @@
 const  pool  = require("../../config/dbConfig");
 const { generateToken } = require("../services/auth");
 const bcrypt = require('bcrypt');
+const {sendOTP} = require('../services/Mail')
 
 
 
@@ -54,6 +55,7 @@ async function login(req, resp) {
         resp.header('token',token)
         // Send response
         return resp.status(200).json({error: false, Authorization: token, });
+
     } catch (error) {
         console.error('Login error:', error);
         return resp.status(500).json({ error: 'Error during login',email: req.body.companyemail,pswd: req.body.companypswd });
@@ -139,6 +141,9 @@ RETURNING "autoid"
         const result = await pool.query(query, values);
 
         if (result.rows.length > 0) {
+            // sendOTP(companyemail).then((otp) => {
+            //     console.log("Generated OTP:", otp);
+            // });
             return res.status(201).json({
                 success: true,
                 message: "Company and branch registered successfully.",
