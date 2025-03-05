@@ -1,4 +1,4 @@
-const { client } = require("../../config/dbConfig");
+const  pool  = require("../../config/dbConfig");
 const { generateToken } = require("../services/auth");
 
 async function employeeData(req, resp) {
@@ -20,7 +20,7 @@ async function employeeData(req, resp) {
         let result;
     
         try {
-            result = await client.query(query, values);
+            result = await pool.query(query, values);
             
         } catch (dbError) {
             console.error('Database query failed:', dbError);

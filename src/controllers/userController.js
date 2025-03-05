@@ -1,4 +1,4 @@
-const { client } = require("../../config/dbConfig");
+const  pool  = require("../../config/dbConfig");
 const { generateToken } = require("../services/auth");
 const bcrypt = require('bcrypt');
 
@@ -36,7 +36,7 @@ async function login(req, resp) {
         const query = `SELECT "companyid", "companyemail", "companypswd" FROM mst_companies WHERE "companyemail" = $1`;
         const values = [companyemail];
 
-        const result = await client.query(query, values);
+        const result = await pool.query(query, values);
         if (result.rows.length === 0) {
             return resp.status(401).json({ error: 'Invalid credentials.' });
         }
@@ -94,7 +94,7 @@ async function signup(req, res) {
         }
 
         // Check if email or phone already exists
-        const existingcompany = await client.query(
+        const existingcompany = await pool.query(
             `SELECT "companyid" FROM mst_companies WHERE "companyemail" = $1 `,
             [companyemail]
         );
@@ -137,7 +137,7 @@ RETURNING "autoid"
 
         const values = [companyname, companyemail, companyphone, companyaddress, companycity, companygst, hashedPassword, companystate];
 
-        const result = await client.query(query, values);
+        const result = await pool.query(query, values);
 
         if (result.rows.length > 0) {
             return res.status(201).json({
