@@ -52,3 +52,4 @@ SvelteKit build output
 Nuxt.js build output
 
 .nuxt/
+.vercel
