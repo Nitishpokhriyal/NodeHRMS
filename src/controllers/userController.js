@@ -56,7 +56,7 @@ async function login(req, resp) {
         return resp.status(200).json({error: false, Authorization: token, });
     } catch (error) {
         console.error('Login error:', error);
-        return resp.status(500).json({ error: 'Error during login',email: req.body.companyemail,pswd: req.bodycompanypswd });
+        return resp.status(500).json({ error: 'Error during login',email: req.body.companyemail,pswd: req.body.companypswd });
     }
 }
 
