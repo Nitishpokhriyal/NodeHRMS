@@ -7,7 +7,7 @@ const options = {
   };
 const generateToken = (payload) => {
 
-    return jwt.sign(payload, 'black@red#34', options );
+    return jwt.sign(payload, process.env.SECRET_KEY, options );
 };
 
 module.exports = {
