@@ -1,5 +1,4 @@
 const  pool  = require("../../config/dbConfig");
-const { generateToken } = require("../services/auth");
 
 async function employeeData(req, resp) {
     const { empname, empcode, empemail, empphone, empbranch, empdoj, empdob, companyid } = req.body;

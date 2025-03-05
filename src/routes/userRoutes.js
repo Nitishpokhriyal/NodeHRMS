@@ -8,7 +8,7 @@ const { validateToken } = require('../middleware/verifyToken');
 
 //Login Routes
 
-router.get('/login',loginLimiter, login);
+router.get('/login', login);
 router.post('/signup',signup)
 router.post('/employeeData', employeeData);
 
