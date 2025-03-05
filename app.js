@@ -49,7 +49,7 @@ app.use(bodyParser.json());
 
 // Database Connection
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL || "postgres://postgres.efujrfiftkzmbljxkhny:Udo4jpvJYfuVY05X@aws-0-us-east-1.pooler.supabase.com:6543/postgres",
+  connectionString:  "postgres://postgres.efujrfiftkzmbljxkhny:Udo4jpvJYfuVY05X@aws-0-us-east-1.pooler.supabase.com:6543/postgres",
   ssl: {
     rejectUnauthorized: false, // Allow self-signed certificates
   },
@@ -87,6 +87,7 @@ const testConnection = async () => {
 
 // Signup API
 app.post("/signup", async (req, res) => {
+
   try {
     const { name, email, password } = req.body;
 
